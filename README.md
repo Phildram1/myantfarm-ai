@@ -150,67 +150,12 @@ myantfarm-ai/
 └── LICENSE
 ``````
 
-\\\
-┌─────────────────────────────────────────────┐
-│         Evaluator (Controller)              │
-│  • Runs 116 trials per condition            │
-│  • Measures T₂U and extracts actions        │
-│  • Rate limits to prevent service overload  │
-└────────────┬────────────────────────────────┘
-             │
-      ┌──────┴──────┐
-      │             │
-┌─────▼─────┐  ┌────▼────────┐
-│  Copilot  │  │ Multi-Agent │
-│    (C2)   │  │    (C3)     │
-│  Single   │  │  Diagnosis  │
-│  Agent    │  │  Planner    │
-│           │  │  Risk       │
-└─────┬─────┘  └────┬────────┘
-      │             │
-      └──────┬──────┘
-             │
-      ┌──────▼──────┐
-      │   Ollama    │
-      │  TinyLlama  │
-      │   (1B)      │
-      └─────────────┘
-\\\
-
-## 📁 Repository Structure
-
-\\\
-myantfarm-ai/
-├── paper/                      # LaTeX paper source
-│   ├── main.tex
-│   ├── sections/
-│   ├── figures/
-│   └── tables/
-├── services/                   # Docker microservices
-│   ├── copilot/               # C2: Single-agent
-│   ├── multiagent/            # C3: Multi-agent orchestrator
-│   ├── evaluator/             # Trial controller
-│   └── analyzer/              # Post-processing
-├── src/                       # Python modules
-│   ├── scoring/               # DQ scorer
-│   ├── analysis/              # Statistical tests
-│   └── evaluation/            # Trial orchestration
-├── scripts/                   # Analysis scripts
-│   ├── remove_outlier_and_reanalyze.py
-│   ├── generate_stability_plots.py
-│   └── analyze_dq_detail.py
-├── results/                   # Generated results (not in git)
-├── docker-compose.yml
-├── README.md
-└── LICENSE
-\\\
-
 ## 🔬 Reproducing Results
 
 ### Step-by-Step Reproduction
 
 1. **Environment Setup** (5 min)
-   \\\ash
+   \\\bash
    docker-compose build
    docker-compose up -d ollama
    sleep 60
@@ -218,12 +163,12 @@ myantfarm-ai/
    \\\
 
 2. **Run Evaluation** (25-30 min)
-   \\\ash
+   \\\bash
    docker-compose up evaluator
    \\\
 
 3. **Analyze Results** (1 min)
-   \\\ash
+   \\\bash
    docker-compose up analyzer
    python scripts/remove_outlier_and_reanalyze.py
    python scripts/analyze_dq_detail.py
@@ -231,7 +176,7 @@ myantfarm-ai/
    \\\
 
 4. **Verify Results** (1 min)
-   \\\ash
+   \\\bash
    # Check summary statistics
    cat results/analysis_cleaned/summary_t2u_cleaned.csv
    cat results/analysis_cleaned/summary_dq_cleaned.csv
