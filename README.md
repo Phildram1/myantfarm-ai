@@ -1,4 +1,5 @@
-﻿# MyAntFarm.ai: Multi-Agent Orchestration for High-Quality Incident Response
+@"
+# MyAntFarm.ai: Multi-Agent Orchestration for High-Quality Incident Response
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
@@ -30,8 +31,7 @@
 - 20GB free disk space
 
 ### Run Complete Evaluation (30 minutes)
-
-\\\bash
+```bash
 # Clone repository
 git clone https://github.com/Phildram1/myantfarm-ai
 cd myantfarm-ai
@@ -49,16 +49,18 @@ docker-compose up analyzer
 
 # View results
 cat results/analysis/summary_statistics.csv
+```
 
 ### Expected Results
 
 After completion, you should see:
-
+```
 Condition | Mean T2U | Std T2U | Mean DQ | Std DQ    | Actions
 ----------|----------|---------|---------|-----------|--------
 C1        | 120.39s  | 5.92s   | 0.000   | 0.000     | 0.00
 C2        | 41.61s   | 17.31s  | 0.403   | 0.023     | 2.01
 C3        | 40.31s   | 17.32s  | 0.692   | 0.000     | 3.00
+```
 
 **Key takeaway**: C2 and C3 have similar speed (~40s), but C3 produces 71.7% higher quality recommendations with zero variance.
 
@@ -84,19 +86,20 @@ C3        | 40.31s   | 17.32s  | 0.692   | 0.000     | 3.00
 ### Example Outputs
 
 **C2 (Single-Agent) - Vague, Unusable:**
-`
+```
 - "Investigate recent changes"
 - "Review system metrics"
-`
+```
 
 **C3 (Multi-Agent) - Specific, Actionable:**
-`
+```
 - "Rollback auth-service to v2.3.0 using kubectl rollout undo"
 - "Verify database connection pool max_connections setting"  
 - "Monitor error rates for 5 minutes post-rollback"
-`
+```
+
 ## 🏗️ Architecture
-``````
+```
 ┌─────────────────────────────────────────────┐
 │         Evaluator (Controller)              │
 │  • Runs 116 trials per condition            │
@@ -121,10 +124,10 @@ C3        | 40.31s   | 17.32s  | 0.692   | 0.000     | 3.00
       │  TinyLlama  │
       │   (1B)      │
       └─────────────┘
-``````
+```
 
 ## 📁 Repository Structure
-``````
+```
 myantfarm-ai/
 ├── paper/                      # LaTeX paper source
 │   ├── main.tex
@@ -133,7 +136,7 @@ myantfarm-ai/
 │   └── tables/
 ├── services/                   # Docker microservices
 │   ├── copilot/               # C2: Single-agent
-│   ├── multiagent/            # C3: Multi-agent
+│   ├── multiagent/            # C3: Multi-agent orchestrator
 │   ├── evaluator/             # Trial controller
 │   └── analyzer/              # Post-processing
 ├── src/                       # Python modules
@@ -141,86 +144,85 @@ myantfarm-ai/
 │   ├── analysis/              # Statistical tests
 │   └── evaluation/            # Trial orchestration
 ├── scripts/                   # Analysis scripts
-├── results/                   # Generated results
+│   ├── remove_outlier_and_reanalyze.py
+│   ├── generate_stability_plots.py
+│   └── analyze_dq_detail.py
+├── results/                   # Generated results (not in git)
 ├── docker-compose.yml
 ├── README.md
 └── LICENSE
-``````
+```
 
 ## 🔬 Reproducing Results
 
 ### Step-by-Step Reproduction
 
 1. **Environment Setup** (5 min)
-   \\\bash
+```bash
    docker-compose build
    docker-compose up -d ollama
    sleep 60
    docker exec myantfarm_ollama ollama pull tinyllama
-   \\\
+```
 
 2. **Run Evaluation** (25-30 min)
-   \\\bash
+```bash
    docker-compose up evaluator
-   \\\
+```
 
 3. **Analyze Results** (1 min)
-   \\\bash
+```bash
    docker-compose up analyzer
    python scripts/remove_outlier_and_reanalyze.py
    python scripts/analyze_dq_detail.py
    python scripts/generate_stability_plots.py
-   \\\
+```
 
 4. **Verify Results** (1 min)
-   \\\bash
+```bash
    # Check summary statistics
    cat results/analysis_cleaned/summary_t2u_cleaned.csv
    cat results/analysis_cleaned/summary_dq_cleaned.csv
    
    # View plots
    open results/analysis/stability_plots/*.png
-   \\\
+```
 
 ### Configuration Options
 
-Edit \docker-compose.yml\ to customize:
-
-\\\yaml
+Edit `docker-compose.yml` to customize:
+```yaml
 environment:
   - TRIALS_PER_CONDITION=116    # Number of trials (default: 116)
   - RANDOM_SEED=42              # Reproducibility seed
   - MODEL_NAME=tinyllama        # LLM model
-\\\
+```
 
 ## 📊 Metrics Definition
 
 ### Time to Usable Understanding (T₂U)
-
-\\\
+```
 T₂U = t_understanding - t_incident
-\\\
+```
 
 Where:
-- \	_incident\: Trial start timestamp
-- \	_understanding\: First actionable output timestamp
+- `t_incident`: Trial start timestamp
+- `t_understanding`: First actionable output timestamp
 
 ### Decision Quality (DQ) - Multi-Dimensional
-
-\\\
+```
 DQ = 0.40 × Validity + 0.30 × Specificity + 0.30 × Correctness
-\\\
+```
 
 **Components**:
 - **Validity** (0-1): Ratio of technically feasible actions
 - **Specificity** (0-1): Presence of concrete identifiers (versions, commands, services)
 - **Correctness** (0-1): Alignment with ground truth solution
 
-See \docs/metrics_specification.md\ for detailed scoring rubric.
+See `docs/metrics_specification.md` for detailed scoring rubric.
 
 ## 🧪 Testing
-
-\\\bash
+```bash
 # Quick test (3 trials per condition, ~5 min)
 TRIALS_PER_CONDITION=3 docker-compose up evaluator
 
@@ -229,40 +231,39 @@ pytest tests/
 
 # Verify DQ scorer
 python src/scoring/dq_scorer_v2.py
-\\\
+```
 
 ## 📈 Analysis Scripts
 
 ### Outlier Removal Analysis
-\\\bash
+```bash
 python scripts/remove_outlier_and_reanalyze.py
 # Output: results/analysis_cleaned/
-\\\
+```
 
 ### DQ Component Breakdown
-\\\bash
+```bash
 python scripts/analyze_dq_detail.py
 # Shows specificity and correctness breakdown
-\\\
+```
 
 ### Stability Visualization
-\\\bash
+```bash
 python scripts/generate_stability_plots.py
 # Output: results/analysis/stability_plots/
-\\\
+```
 
 ## 🎓 Citation
 
 If you use this work, please cite:
-
-\\\ibtex
-@article{drammeh2025myantfarm,
+```bibtex
+@misc{drammeh2025myantfarm,
   title={Multi-Agent LLM Orchestration Achieves Deterministic, High-Quality Decision Support for Incident Response},
   author={Drammeh, Philip},
-  journal={arXiv preprint arXiv:XXXX.XXXXX},
-  year={2025}
+  year={2025},
+  howpublished={\url{https://github.com/Phildram1/myantfarm-ai}}
 }
-\\\
+```
 
 ## 🤝 Contributing
 
@@ -274,7 +275,7 @@ Contributions welcome! Areas for enhancement:
 - MCP connectors for live telemetry
 - Larger models (Llama 3.1 70B, GPT-4)
 
-See \CONTRIBUTING.md\ for guidelines.
+See `CONTRIBUTING.md` for guidelines.
 
 ## 📝 License
 
@@ -316,3 +317,6 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **Last Updated**: November 2025  
 **Version**: 2.0.0 (Quality-Focused)
+"@ | Out-File -FilePath "README.md" -Encoding UTF8 -NoNewline
+
+Write-Host "✓ Created clean README.md"
