@@ -6,7 +6,7 @@
 
 https://github.com/Phildram1/myantfarm-ai/blob/main/Docs/Multi-Agent_LLM_Orchestration_Incident_Response_Executive_Summary.pdf
 
-Docs/Multi-Agent_LLM_Orchestration_Incident-Response_Full.pdf
+https://github.com/Phildram1/myantfarm-ai/blob/main/Docs/Multi-Agent_LLM_Orchestration_Incident-Response_Full.pdf
 
 > **Reproducible framework demonstrating that multi-agent LLM orchestration achieves 100% actionable recommendation quality compared to 1.7% for single-agent systems, with 81× improvement in specificity and 126× improvement in correctness.**
 
