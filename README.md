@@ -1,4 +1,3 @@
-@"
 # MyAntFarm.ai: Multi-Agent Orchestration for High-Quality Incident Response
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
