@@ -64,6 +64,13 @@ C3        | 40.31s   | 17.32s  | 0.692   | 0.000     | 3.00
 
 **Key takeaway**: C2 and C3 have similar speed (~40s), but C3 produces 71.7% higher quality recommendations with zero variance.
 
+### Limitations - Model Dependency
+
+Our findings use TinyLlama (1B parameters) for reproducibility and resource constraints. Larger models (Llama 3.1 70B, GPT-4) may improve absolute DQ scores for both conditions. However, architectural advantages—task specialization, fault isolation, zero variance—derive from orchestration design rather than model capabilities, and should persist across model scales.
+
+**Future work** will validate these findings with state-of-the-art models to quantify model size effects on relative improvement magnitude.
+```
+
 ## 📊 Results Summary
 
 ### Decision Quality Component Breakdown
