@@ -1,0 +1,25 @@
+FROM python:3.11-slim
+
+WORKDIR /app
+
+# Install dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application code
+COPY . .
+
+# Create results directory
+RUN mkdir -p /app/results
+
+CMD ["python", "run_evaluation.py"]
+```
+
+**Create: `services/evaluator/requirements.txt`**
+```
+fastapi==0.104.1
+httpx==0.25.0
+pydantic==2.4.2
+python-dotenv==1.0.0
+pandas==2.1.1
+numpy==1.24.3
