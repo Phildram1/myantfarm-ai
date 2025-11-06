@@ -4,6 +4,8 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-required-blue.svg)](https://www.docker.com/)
 
+https://github.com/Phildram1/myantfarm-ai/blob/main/Docs/Multi-Agent_LLM_Orchestration_Incident_Response_Executive_Summary.pdf
+
 > **Reproducible framework demonstrating that multi-agent LLM orchestration achieves 100% actionable recommendation quality compared to 1.7% for single-agent systems, with 81× improvement in specificity and 126× improvement in correctness.**
 
 ## 📄 Paper
