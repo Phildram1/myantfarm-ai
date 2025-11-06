@@ -54,7 +54,6 @@ cat results/analysis/summary_statistics.csv
 
 After completion, you should see:
 
-\\\
 Condition | Mean T2U | Std T2U | Mean DQ | Std DQ    | Actions
 ----------|----------|---------|---------|-----------|--------
 C1        | 120.39s  | 5.92s   | 0.000   | 0.000     | 0.00
