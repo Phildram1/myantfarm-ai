@@ -31,7 +31,7 @@
 
 ### Run Complete Evaluation (30 minutes)
 
-\\\ash
+\\\bash
 # Clone repository
 git clone https://github.com/Phildram1/myantfarm-ai
 cd myantfarm-ai
@@ -49,7 +49,6 @@ docker-compose up analyzer
 
 # View results
 cat results/analysis/summary_statistics.csv
-\\\
 
 ### Expected Results
 
@@ -61,7 +60,6 @@ Condition | Mean T2U | Std T2U | Mean DQ | Std DQ    | Actions
 C1        | 120.39s  | 5.92s   | 0.000   | 0.000     | 0.00
 C2        | 41.61s   | 17.31s  | 0.403   | 0.023     | 2.01
 C3        | 40.31s   | 17.32s  | 0.692   | 0.000     | 3.00
-\\\
 
 **Key takeaway**: C2 and C3 have similar speed (~40s), but C3 produces 71.7% higher quality recommendations with zero variance.
 
@@ -223,7 +221,7 @@ See \docs/metrics_specification.md\ for detailed scoring rubric.
 
 ## 🧪 Testing
 
-\\\ash
+\\\bash
 # Quick test (3 trials per condition, ~5 min)
 TRIALS_PER_CONDITION=3 docker-compose up evaluator
 
@@ -237,19 +235,19 @@ python src/scoring/dq_scorer_v2.py
 ## 📈 Analysis Scripts
 
 ### Outlier Removal Analysis
-\\\ash
+\\\bash
 python scripts/remove_outlier_and_reanalyze.py
 # Output: results/analysis_cleaned/
 \\\
 
 ### DQ Component Breakdown
-\\\ash
+\\\bash
 python scripts/analyze_dq_detail.py
 # Shows specificity and correctness breakdown
 \\\
 
 ### Stability Visualization
-\\\ash
+\\\bash
 python scripts/generate_stability_plots.py
 # Output: results/analysis/stability_plots/
 \\\
