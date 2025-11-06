@@ -98,8 +98,57 @@ C3        | 40.31s   | 17.32s  | 0.692   | 0.000     | 3.00
 - "Verify database connection pool max_connections setting"  
 - "Monitor error rates for 5 minutes post-rollback"
 `
-
 ## 🏗️ Architecture
+``````
+┌─────────────────────────────────────────────┐
+│         Evaluator (Controller)              │
+│  • Runs 116 trials per condition            │
+│  • Measures T₂U and extracts actions        │
+│  • Rate limits to prevent service overload  │
+└────────────┬────────────────────────────────┘
+             │
+      ┌──────┴──────┐
+      │             │
+┌─────▼─────┐  ┌────▼────────┐
+│  Copilot  │  │ Multi-Agent │
+│    (C2)   │  │    (C3)     │
+│  Single   │  │  Diagnosis  │
+│  Agent    │  │  Planner    │
+│           │  │  Risk       │
+└─────┬─────┘  └────┬────────┘
+      │             │
+      └──────┬──────┘
+             │
+      ┌──────▼──────┐
+      │   Ollama    │
+      │  TinyLlama  │
+      │   (1B)      │
+      └─────────────┘
+``````
+
+## 📁 Repository Structure
+``````
+myantfarm-ai/
+├── paper/                      # LaTeX paper source
+│   ├── main.tex
+│   ├── sections/
+│   ├── figures/
+│   └── tables/
+├── services/                   # Docker microservices
+│   ├── copilot/               # C2: Single-agent
+│   ├── multiagent/            # C3: Multi-agent
+│   ├── evaluator/             # Trial controller
+│   └── analyzer/              # Post-processing
+├── src/                       # Python modules
+│   ├── scoring/               # DQ scorer
+│   ├── analysis/              # Statistical tests
+│   └── evaluation/            # Trial orchestration
+├── scripts/                   # Analysis scripts
+├── results/                   # Generated results
+├── docker-compose.yml
+├── README.md
+└── LICENSE
+``````
 
 \\\
 ┌─────────────────────────────────────────────┐
