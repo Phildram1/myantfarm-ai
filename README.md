@@ -202,7 +202,7 @@ H2: C2-C3 DQ gap narrows as model size increases (but remains significant)
 H3: Zero variance in C3 persists (deterministic orchestration)
 
 ## 🏗️ Architecture
-```
+``````
 ┌─────────────────────────────────────────────┐
 │         Evaluator (Controller)              │
 │  • Runs 116 trials per condition            │
@@ -227,10 +227,10 @@ H3: Zero variance in C3 persists (deterministic orchestration)
       │  TinyLlama  │
       │   (1B)      │
       └─────────────┘
-```
+``````
 
 ## 📁 Repository Structure
-```
+``````
 myantfarm-ai/
 ├── paper/                      # LaTeX paper source
 │   ├── main.tex
@@ -239,7 +239,7 @@ myantfarm-ai/
 │   └── tables/
 ├── services/                   # Docker microservices
 │   ├── copilot/               # C2: Single-agent
-│   ├── multiagent/            # C3: Multi-agent orchestrator
+│   ├── multiagent/            # C3: Multi-agent
 │   ├── evaluator/             # Trial controller
 │   └── analyzer/              # Post-processing
 ├── src/                       # Python modules
@@ -247,14 +247,11 @@ myantfarm-ai/
 │   ├── analysis/              # Statistical tests
 │   └── evaluation/            # Trial orchestration
 ├── scripts/                   # Analysis scripts
-│   ├── remove_outlier_and_reanalyze.py
-│   ├── generate_stability_plots.py
-│   └── analyze_dq_detail.py
-├── results/                   # Generated results (not in git)
+├── results/                   # Generated results
 ├── docker-compose.yml
 ├── README.md
 └── LICENSE
-```
+``````
 
 ## 🔬 Reproducing Results
 
