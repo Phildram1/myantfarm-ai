@@ -4,9 +4,7 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-required-blue.svg)](https://www.docker.com/)
 
-https://github.com/Phildram1/myantfarm-ai/blob/main/Docs/Multi-Agent_LLM_Orchestration_Incident_Response_Executive_Summary.pdf
-
-https://github.com/Phildram1/myantfarm-ai/blob/main/Docs/Multi-Agent_LLM_Orchestration_Incident-Response_Full.pdf
+**Paper**: [Executive Summary](https://github.com/Phildram1/myantfarm-ai/blob/main/Docs/Multi-Agent_LLM_Orchestration_Incident_Response_Executive_Summary.pdf) | [Full Paper](https://github.com/Phildram1/myantfarm-ai/blob/main/Docs/Multi-Agent_LLM_Orchestration_Incident-Response_Full.pdf)
 
 > **Reproducible framework demonstrating that multi-agent LLM orchestration achieves 100% actionable recommendation quality compared to 1.7% for single-agent systems, with 81× improvement in specificity and 126× improvement in correctness.**
 
@@ -72,7 +70,6 @@ C3        | 40.31s   | 17.32s  | 0.692   | 0.000     | 3.00
 Our findings use TinyLlama (1B parameters) for reproducibility and resource constraints. Larger models (Llama 3.1 70B, GPT-4) may improve absolute DQ scores for both conditions. However, architectural advantages—task specialization, fault isolation, zero variance—derive from orchestration design rather than model capabilities, and should persist across model scales.
 
 **Future work** will validate these findings with state-of-the-art models to quantify model size effects on relative improvement magnitude.
-```
 
 ## 📊 Results Summary
 
@@ -107,6 +104,7 @@ Our findings use TinyLlama (1B parameters) for reproducibility and resource cons
 - "Verify database connection pool max_connections setting"  
 - "Monitor error rates for 5 minutes post-rollback"
 ```
+
 ## 💼 Practical Applications
 
 ### How to Use These Findings
@@ -158,9 +156,8 @@ Total: ~$70,000/year
 ```
 
 *Adjust multipliers for your context (incident volume, labor cost, downtime impact).*
-```
 
-## 3️⃣ Would Results Change with Different LLama Versions?
+## 🤔 Would Results Change with Different LLama Versions?
 
 **Short answer**: **Probably yes, but architectural advantages should persist.**
 
@@ -200,57 +197,66 @@ Larger models have:
 H1: C3 retains 100% actionability across all model sizes (structural property)
 H2: C2-C3 DQ gap narrows as model size increases (but remains significant)
 H3: Zero variance in C3 persists (deterministic orchestration)
+```
 
 ## 🏗️ Architecture
+
 ```
 ┌─────────────────────────────────────────────┐
 │         Evaluator (Controller)              │
 │  • Runs 116 trials per condition            │
 │  • Measures T₂U and extracts actions        │
 │  • Rate limits to prevent service overload  │
-└────────────┬────────────────────────────────┘
-             │
-      ┌──────┴──────┐
-      │             │
-┌─────▼─────┐  ┌────▼────────┐
-│  Copilot  │  │ Multi-Agent │
-│    (C2)   │  │    (C3)     │
-│  Single   │  │  Diagnosis  │
-│  Agent    │  │  Planner    │
-│           │  │  Risk       │
-└─────┬─────┘  └────┬────────┘
-      │             │
-      └──────┬──────┘
-             │
-      ┌──────▼──────┐
-      │   Ollama    │
-      │  TinyLlama  │
-      │   (1B)      │
-      └─────────────┘
+└─────────────────┬───────────────────────────┘
+                  │
+          ┌───────┴───────┐
+          │               │
+┌─────────▼─────┐  ┌──────▼────────┐
+│   Copilot     │  │  Multi-Agent  │
+│     (C2)      │  │     (C3)      │
+│  Single       │  │   Diagnosis   │
+│  Agent        │  │   Planner     │
+│               │  │   Risk        │
+└─────────┬─────┘  └──────┬────────┘
+          │               │
+          └───────┬───────┘
+                  │
+          ┌───────▼───────┐
+          │    Ollama     │
+          │  TinyLlama    │
+          │     (1B)      │
+          └───────────────┘
 ```
 
 ## 📁 Repository Structure
+
 ```
 myantfarm-ai/
+│
 ├── paper/                      # LaTeX paper source
 │   ├── main.tex
 │   ├── sections/
 │   ├── figures/
 │   └── tables/
+│
 ├── services/                   # Docker microservices
 │   ├── copilot/               # C2: Single-agent
 │   ├── multiagent/            # C3: Multi-agent orchestrator
 │   ├── evaluator/             # Trial controller
 │   └── analyzer/              # Post-processing
+│
 ├── src/                       # Python modules
 │   ├── scoring/               # DQ scorer
 │   ├── analysis/              # Statistical tests
 │   └── evaluation/            # Trial orchestration
+│
 ├── scripts/                   # Analysis scripts
 │   ├── remove_outlier_and_reanalyze.py
 │   ├── generate_stability_plots.py
 │   └── analyze_dq_detail.py
+│
 ├── results/                   # Generated results (not in git)
+│
 ├── docker-compose.yml
 ├── README.md
 └── LICENSE
@@ -265,16 +271,16 @@ In this study, an **agent** is a single LLM inference call with a specialized pr
 ### Single-Agent (C2)
 
 **Structure**: 1 LLM call with complex prompt
+
 ```
-┌─────────────────────────────┐
-│  Prompt: "Analyze incident, │
-│   find root cause, create   │
-│   actions, assess risk"     │
-│                             │
-│  → TinyLlama (1B)          │
-│                             │
-│  Response: [All-in-one]     │
-└─────────────────────────────┘
+┌─────────────────────────────────────────┐
+│  Prompt: "Analyze incident, find root  │
+│   cause, create actions, assess risk"  │
+│                                         │
+│  → TinyLlama (1B)                      │
+│                                         │
+│  Response: [All-in-one]                │
+└─────────────────────────────────────────┘
 ```
 
 **Characteristics**:
@@ -285,14 +291,18 @@ In this study, an **agent** is a single LLM inference call with a specialized pr
 ### Multi-Agent (C3)
 
 **Structure**: 3 sequential LLM calls, each focused
+
 ```
-Agent 1: Diagnosis          Agent 2: Planning           Agent 3: Risk
+Step 1: Diagnosis          Step 2: Planning           Step 3: Risk Assessment
 ┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐
-│ "Find root cause"│  →    │ "Create actions" │  →    │ "Assess risk"    │
-│                  │       │  given: [Agent1] │       │  of: [Agent2]    │
-│ → TinyLlama      │       │ → TinyLlama      │       │ → TinyLlama      │
+│ Prompt:          │       │ Prompt:          │       │ Prompt:          │
+│ "Find root       │  ───> │ "Create actions  │  ───> │ "Assess risk of  │
+│  cause"          │       │  given diagnosis"│       │  these actions"  │
 │                  │       │                  │       │                  │
-│ Output: Root     │       │ Output: Actions  │       │ Output: Risk     │
+│ → TinyLlama (1B) │       │ → TinyLlama (1B) │       │ → TinyLlama (1B) │
+│                  │       │                  │       │                  │
+│ Output:          │       │ Output:          │       │ Output:          │
+│ Root cause found │       │ Action list      │       │ Risk assessment  │
 └──────────────────┘       └──────────────────┘       └──────────────────┘
          │                          │                          │
          └──────────────────────────┴──────────────────────────┘
@@ -320,35 +330,35 @@ Agent 1: Diagnosis          Agent 2: Planning           Agent 3: Risk
 
 ### Step-by-Step Reproduction
 
-1. **Environment Setup** (5 min)
+**1. Environment Setup** (5 min)
 ```bash
-   docker-compose build
-   docker-compose up -d ollama
-   sleep 60
-   docker exec myantfarm_ollama ollama pull tinyllama
+docker-compose build
+docker-compose up -d ollama
+sleep 60
+docker exec myantfarm_ollama ollama pull tinyllama
 ```
 
-2. **Run Evaluation** (25-30 min)
+**2. Run Evaluation** (25-30 min)
 ```bash
-   docker-compose up evaluator
+docker-compose up evaluator
 ```
 
-3. **Analyze Results** (1 min)
+**3. Analyze Results** (1 min)
 ```bash
-   docker-compose up analyzer
-   python scripts/remove_outlier_and_reanalyze.py
-   python scripts/analyze_dq_detail.py
-   python scripts/generate_stability_plots.py
+docker-compose up analyzer
+python scripts/remove_outlier_and_reanalyze.py
+python scripts/analyze_dq_detail.py
+python scripts/generate_stability_plots.py
 ```
 
-4. **Verify Results** (1 min)
+**4. Verify Results** (1 min)
 ```bash
-   # Check summary statistics
-   cat results/analysis_cleaned/summary_t2u_cleaned.csv
-   cat results/analysis_cleaned/summary_dq_cleaned.csv
-   
-   # View plots
-   open results/analysis/stability_plots/*.png
+# Check summary statistics
+cat results/analysis_cleaned/summary_t2u_cleaned.csv
+cat results/analysis_cleaned/summary_dq_cleaned.csv
+
+# View plots
+open results/analysis/stability_plots/*.png
 ```
 
 ### Configuration Options
@@ -385,6 +395,7 @@ DQ = 0.40 × Validity + 0.30 × Specificity + 0.30 × Correctness
 See `docs/metrics_specification.md` for detailed scoring rubric.
 
 ## 🧪 Testing
+
 ```bash
 # Quick test (3 trials per condition, ~5 min)
 TRIALS_PER_CONDITION=3 docker-compose up evaluator
@@ -480,6 +491,3 @@ MIT License - see [LICENSE](LICENSE) file for details.
 
 **Last Updated**: November 2025  
 **Version**: 2.0.0 (Quality-Focused)
-"@ | Out-File -FilePath "README.md" -Encoding UTF8 -NoNewline
-
-Write-Host "✓ Created clean README.md"
