@@ -252,7 +252,65 @@ myantfarm-ai/
 ├── README.md
 └── LICENSE
 ``````
+## 🤖 Agent Definitions
 
+### What is an "Agent"?
+
+In this study, an **agent** is a single LLM inference call with a specialized prompt. All agents use the same TinyLlama (1B) model—the difference is **prompt focus**, not model variety.
+
+### Single-Agent (C2)
+
+**Structure**: 1 LLM call with complex prompt
+```
+┌─────────────────────────────┐
+│  Prompt: "Analyze incident, │
+│   find root cause, create   │
+│   actions, assess risk"     │
+│                             │
+│  → TinyLlama (1B)          │
+│                             │
+│  Response: [All-in-one]     │
+└─────────────────────────────┘
+```
+
+**Characteristics**:
+- Single complex prompt with multiple objectives
+- LLM must balance diagnosis + planning + risk in one output
+- No iteration or refinement
+
+### Multi-Agent (C3)
+
+**Structure**: 3 sequential LLM calls, each focused
+```
+Agent 1: Diagnosis          Agent 2: Planning           Agent 3: Risk
+┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐
+│ "Find root cause"│  →    │ "Create actions" │  →    │ "Assess risk"    │
+│                  │       │  given: [Agent1] │       │  of: [Agent2]    │
+│ → TinyLlama      │       │ → TinyLlama      │       │ → TinyLlama      │
+│                  │       │                  │       │                  │
+│ Output: Root     │       │ Output: Actions  │       │ Output: Risk     │
+└──────────────────┘       └──────────────────┘       └──────────────────┘
+         │                          │                          │
+         └──────────────────────────┴──────────────────────────┘
+                                    │
+                         ┌──────────▼──────────┐
+                         │  Coordinator        │
+                         │  (combines outputs) │
+                         └─────────────────────┘
+```
+
+**Characteristics**:
+- 3 separate prompts, each with single objective
+- Sequential composition: Agent 2 uses Agent 1's output
+- Coordinator aggregates (no LLM used for aggregation)
+- Same TinyLlama backend for all agents
+
+### Why "Multi-Agent" Improves Quality
+
+1. **Prompt simplicity**: Each agent has focused, simple prompt → less confusion
+2. **Task specialization**: Diagnosis doesn't compete with planning for context window
+3. **Error isolation**: If diagnosis fails, planning can still proceed with partial info
+4. **Implicit structure**: 3 separate calls enforce structured output format
 
 ## 🔬 Reproducing Results
 
