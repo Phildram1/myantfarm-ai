@@ -14,7 +14,7 @@
 
 **Authors**: Philip Drammeh, M.Eng.
 
-**Abstract**: This study demonstrates that multi-agent orchestration fundamentally transforms LLM-based incident response from generating vague suggestions to producing specific, actionable recommendations. Through 348 controlled trials, we show that multi-agent systems achieve 100% actionable recommendation quality (DQ > 0.5) compared to 1.7% for single-agent approaches, with 81× higher specificity and 126× higher correctness. Critically, multi-agent systems exhibit zero quality variance, making them production-ready, while single-agent systems produce inconsistent, largely unusable outputs.
+**Abstract**: This study demonstrates that multi-agent orchestration fundamentally transforms LLM-based incident response from generating vague suggestions to producing specific, actionable recommendations. Through 348 controlled trials, we show that multi-agent systems achieve 100% actionable recommendation quality (DQ > 0.5) compared to 1.7% for single-agent approaches, with 80× higher specificity and 140× higher correctness. Critically, multi-agent systems exhibit zero quality variance, making them production-ready, while single-agent systems produce inconsistent, largely unusable outputs.
 
 **Key Findings**:
 - ✅ **100% vs 1.7%** actionable recommendation rate
