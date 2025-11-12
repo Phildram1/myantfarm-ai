@@ -1,4 +1,4 @@
-﻿\documentclass[conference]{IEEEtran}
+\documentclass[conference]{IEEEtran}
 \IEEEoverridecommandlockouts
 
 \usepackage{cite}
@@ -12,6 +12,24 @@
 \usepackage{siunitx}
 \usepackage{hyperref}
 \usepackage{listings}
+\usepackage{threeparttable}
+
+% Hyperref settings for arXiv
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=cyan,
+    citecolor=blue,
+    pdftitle={Multi-Agent LLM Orchestration for Incident Response},
+    pdfauthor={Philip Drammeh},
+    pdfsubject={Multi-agent systems, LLM, incident response, AIOps},
+    pdfkeywords={multi-agent systems, large language models, incident response, decision quality, AIOps}
+}
+
+% Add arXiv identifier placeholder (will be filled after acceptance)
+% \arxivid{2501.XXXXX}
+
 
 \def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
     T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
@@ -30,7 +48,7 @@ GitHub: https://github.com/Phildram1/myantfarm-ai}}
 \pagestyle{plain}
 
 \begin{abstract}
-Modern operational teams face a critical gap between incident detection and actionable comprehension. While single-agent large language models (LLMs) can summarize incidents quickly, we demonstrate they produce vague, unusable recommendations 98.3\% of the time. Through 348 controlled trials using a reproducible containerized framework (MyAntFarm.ai), we show that multi-agent orchestration fundamentally transforms LLM-based incident response quality. Multi-agent systems achieve 100\% actionable recommendation rate compared to 1.7\% for single-agent approaches, with 81$\times$ improvement in action specificity and 126$\times$ improvement in solution correctness. Critically, multi-agent systems exhibit zero quality variance across all trials, making them production-ready, while single-agent outputs remain inconsistent and largely unusable. These findings establish that the primary value of multi-agent orchestration lies not in speed (both systems achieve $\sim$40s latency) but in deterministic, high-quality decision support essential for time-critical operational contexts.
+Modern operational teams face a critical gap between incident detection and actionable comprehension. While single-agent large language models (LLMs) can summarize incidents quickly, we demonstrate they produce vague, unusable recommendations 98.3\% of the time. Through 348 controlled trials using a reproducible containerized framework (MyAntFarm.ai), we show that multi-agent orchestration fundamentally transforms LLM-based incident response quality. Multi-agent systems achieve 100\% actionable recommendation rate compared to 1.7\% for single-agent approaches, with 80$\times$ improvement in action specificity and 140$\times$ improvement in solution correctness. Critically, multi-agent systems exhibit zero quality variance across all trials, making them production-ready, while single-agent outputs remain inconsistent and largely unusable. These findings establish that the primary value of multi-agent orchestration lies not in speed (both systems achieve $\sim$40s latency) but in deterministic, high-quality decision support essential for time-critical operational contexts.
 \end{abstract}
 
 \begin{IEEEkeywords}
@@ -49,8 +67,8 @@ Through 348 simulation trials, we demonstrate:
 
 \begin{itemize}
     \item \textbf{Deterministic quality advantage}: Multi-agent systems achieve 100\% actionable recommendation rate (Decision Quality $>$ 0.5) versus 1.7\% for single-agent systems, with zero variance across all trials.
-    \item \textbf{Specificity improvement}: 81$\times$ higher action specificity---multi-agent generates commands like ``rollback auth-service to v2.3.0'' versus single-agent's ``investigate recent changes.''
-    \item \textbf{Correctness improvement}: 126$\times$ better alignment with ground truth solutions, measured via token overlap with validated incident resolutions.
+    \item \textbf{Specificity improvement}: 80$\times$ higher action specificity---multi-agent generates commands like ``rollback auth-service to v2.3.0'' versus single-agent's ``investigate recent changes.''
+    \item \textbf{Correctness improvement}: 140$\times$ better alignment with ground truth solutions, measured via token overlap with validated incident resolutions.
     \item \textbf{Production readiness}: Zero quality variance in multi-agent systems enables SLA commitments, unlike single-agent's unpredictable outputs.
     \item \textbf{Novel evaluation framework}: We introduce Decision Quality (DQ), a multi-dimensional metric capturing validity, specificity, and correctness---properties essential for production deployment that existing LLM metrics do not address.
 \end{itemize}
@@ -61,15 +79,15 @@ Critically, both single-agent and multi-agent systems achieve similar comprehens
 
 \subsection{LLMs in Operational Intelligence}
 
-Recent work on AI for IT Operations (AIOps) demonstrates LLMs' potential for log analysis~\cite{xu2021aiops}, anomaly detection~\cite{zhang2023llm-anomaly}, and incident summarization~\cite{liu2023ragops}. However, these studies focus on \textit{detection} rather than \textit{actionable response}. Our work addresses the gap between identifying issues and generating executable remediation steps.
+Recent advances in large language models have transformed AI for IT Operations (AIOps)~\cite{zhang2025aiops}, with deep learning approaches showing particular promise for anomaly detection~\cite{darban2024deep}. However, these studies focus on \textit{detection} rather than \textit{actionable response}. Our work addresses the gap between identifying issues and generating executable remediation steps.
 
 \subsection{Multi-Agent LLM Systems}
 
-Multi-agent approaches have shown promise in software engineering~\cite{qian2023chatdev}, scientific reasoning~\cite{wang2024sciagents}, and collaborative problem-solving~\cite{park2023generative}. These systems distribute reasoning across specialized agents, improving both quality and explainability. We extend this paradigm to operational intelligence, where time-critical decisions demand both speed and reliability.
+Multi-agent approaches have shown promise in software engineering~\cite{qian2023chatdev}, scientific reasoning~\cite{qian2024scaling}, and collaborative problem-solving~\cite{park2023generative}. These systems distribute reasoning across specialized agents, improving both quality and explainability. We extend this paradigm to operational intelligence, where time-critical decisions demand both speed and reliability.
 
 \subsection{Evaluation Metrics for LLM Systems}
-
-Prior LLM evaluation work emphasizes accuracy~\cite{zheng2023judging} and coherence~\cite{zhang2019bertscore}. Existing metrics (BLEU, ROUGE, BERTScore) measure linguistic similarity but not \textit{operational actionability}. We introduce Decision Quality (DQ), a multi-dimensional metric capturing validity, specificity, and correctness---critical properties for production deployment that existing metrics do not address.
+Prior LLM evaluation metrics focus on linguistic properties. BERTScore~\cite{zhang2020bertscore} uses contextual embeddings 
+to measure semantic similarity, correlating better with human judgments than n-gram metrics. However, semantic similarity does not capture \textit{operational actionability}. We introduce Decision Quality (DQ), a multi-dimensional metric capturing validity, specificity, and correctness---critical properties for production deployment that existing metrics do not address.
 
 \section{Methods}
 
@@ -97,7 +115,7 @@ Three conditions were evaluated under identical incident contexts:
     \item \textbf{C3 (Multi-Agent)}: Coordinator dispatches context to specialized agents, aggregates outputs, produces structured brief. Timing measured end-to-end including orchestration overhead.
 \end{itemize}
 
-\textbf{Transparency note}: C1 timing is simulated based on literature estimates~\cite{fishback2020sre-handbook}, not empirically measured. It serves as a reference baseline. C2 and C3 timings reflect actual measured system latency.
+\textbf{Transparency note}: C1 timing is simulated based on literature estimates~\cite{beyer2016site}, not empirically measured. It serves as a reference baseline. C2 and C3 timings reflect actual measured system latency.
 
 \subsection{Agent Definitions}
 
@@ -345,8 +363,8 @@ Table~\ref{tab:dq-components} decomposes DQ into validity, specificity, and corr
 \textbf{Component} & \textbf{C2 Mean} & \textbf{C3 Mean} & \textbf{Improvement} \\
 \midrule
 Validity    & 1.000 $\pm$ 0.000 & 1.000 $\pm$ 0.000 & --- \\
-Specificity & 0.007 $\pm$ 0.052 & 0.557 $\pm$ 0.000 & \textbf{81.8$\times$} \\
-Correctness & 0.003 $\pm$ 0.026 & 0.417 $\pm$ 0.000 & \textbf{126.3$\times$} \\
+Specificity & 0.007 $\pm$ 0.052 & 0.557 $\pm$ 0.000 & \textbf{80$\times$} \\
+Correctness & 0.003 $\pm$ 0.026 & 0.417 $\pm$ 0.000 & \textbf{140$\times$} \\
 \midrule
 Overall DQ  & 0.403 $\pm$ 0.023 & 0.692 $\pm$ 0.000 & \textbf{71.7\%} \\
 \bottomrule
@@ -365,19 +383,25 @@ Overall DQ  & 0.403 $\pm$ 0.023 & 0.692 $\pm$ 0.000 & \textbf{71.7\%} \\
 
 We define \textit{actionable} recommendations as DQ $> 0.5$ (sufficiently specific and correct for operator execution). Table~\ref{tab:actionability} shows dramatic differences in actionability rates.
 
-\begin{table}[htbp]
+\begin{table}[h]
 \centering
-\caption{Recommendation Actionability Rates}
+\caption{RECOMMENDATION ACTIONABILITY RATES}
 \label{tab:actionability}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Metric} & \textbf{C2} & \textbf{C3} \\
-\midrule
-Trials with DQ $>$ 0.5 (Good) & 2/115 (1.7\%) & 116/116 (100\%) \\
-Trials with DQ $<$ 0.3 (Poor) & 0/115 (0\%)   & 0/116 (0\%) \\
+\begin{threeparttable}
+\begin{tabular}{lcc}
+\hline
+Metric & C2 & C3 \\
+\hline
+Trials with DQ $>$ 0.5 (Good) & 2/115\tnote{*} (1.7\%) & 116/116 (100\%) \\
+Trials with DQ $<$ 0.3 (Poor) & 0/115 (0\%) & 0/116 (0\%) \\
 Consistent Quality & No & Yes \\
-\bottomrule
+\hline
 \end{tabular}
+\begin{tablenotes}
+\small
+\item[*] C2 shows 115 trials after removing one catastrophic outlier (4009s); see Section IV.E
+\end{tablenotes}
+\end{threeparttable}
 \end{table}
 
 \textbf{Critical finding}: Single-agent systems produce actionable recommendations only 1.7\% of the time, while multi-agent systems achieve 100\% actionability with zero variance. This represents a \textit{qualitative difference in production readiness}, not merely quantitative improvement.
@@ -452,7 +476,7 @@ For time-critical incidents where incorrect or vague guidance extends Mean Time 
 
 \subsection{Architectural Sources of Quality Advantage}
 
-Multi-agent quality improvements derive from three mechanisms:
+Multi-agent quality improvements derive from four mechanisms:
 
 \begin{enumerate}
     \item \textbf{Task specialization}: Dedicated diagnosis, planning, and risk agents focus on distinct aspects, improving depth over single-agent breadth. Each agent's prompt is simpler, reducing conflicting objectives.
@@ -477,9 +501,7 @@ DQ prioritizes properties critical for production deployment: an operator can ex
 \textbf{Validation}: Phase 2 will establish inter-rater reliability by having 10-15 SRE practitioners rate 50 trials, comparing human DQ scores against automated scores.
 \subsection{Limitations}
 \subsubsection{Single Scenario}
-All trials used identical authentication service incident context. Generalization across incident classes (database outages, network partitions, resource exhaustion) requires validation. However, the 81$×\times$
-× specificity and 126$×\times$
-× correctness improvements suggest architectural benefits that transcend specific scenarios.
+All trials used identical authentication service incident context. Generalization across incident classes (database outages, network partitions, resource exhaustion) requires validation. However, the 80$×\times$ specificity and 140$×\times$ correctness improvements suggest architectural benefits that transcend specific scenarios.
 
 \textbf{Future work}: Phase 2 will evaluate 5+ diverse scenarios (database connection pool exhaustion, CDN cache poisoning, memory leaks, network partitions, third-party API rate limiting) to establish cross-scenario generalization.
 \subsubsection{Simulated Baseline}
@@ -520,20 +542,26 @@ However, the \textit{relative} quality advantage of multi-agent systems should g
 \begin{itemize}
 \item Integrate with observability platforms via Model Context Protocol (MCP)
 \item Add fallback mechanisms for agent failures
-\item Implement human-in-the-loop for low-confidence recommendations (DQ < 0.5)
+\item Implement human-in-the-loop for low-confidence recommendations (DQ $<$ 0.5)
 \item Log all recommendations for post-incident review
 \end{itemize}
 \subsection{Comparison to Prior Work}
-Recent work on LLM-based incident response~\cite{liu2023ragops,zhang2023llm-anomaly} focuses on detection and summarization. Our contribution demonstrates that \textit{actionable response}---not merely detection---requires multi-agent orchestration. The 1.7% actionability rate of single-agent systems suggests prior approaches may overestimate deployment readiness.
-Multi-agent systems in software engineering~\cite{qian2023chatdev} and scientific reasoning~\cite{wang2024sciagents} report quality improvements consistent with our findings (30-70% improvement in task completion), but do not quantify determinism or production readiness. Our zero-variance result provides the first empirical basis for SLA commitments in multi-agent LLM systems.
-RAG-based approaches~\cite{liu2023ragops} improve context awareness by retrieving historical incidents, but do not address the structural limitations of single-agent prompting. RAG is \textit{complementary} to multi-agent orchestration: integrating RAG with C3 could further improve correctness by grounding recommendations in organizational precedent.
+Recent work on LLM-based incident response~\cite{darban2024deep,lyu2021empirical} focuses on detection and summarization. Our contribution demonstrates that \textit{actionable response}---not merely detection---requires multi-agent orchestration. The 1.7% actionability rate of single-agent systems suggests prior approaches may overestimate deployment readiness.
+
+Multi-agent systems consistently demonstrate quality improvements through task specialization. ChatDev~\cite{qian2023chatdev} 
+pioneered specialized agents for software development, while subsequent work on scaling collaboration~\cite{qian2024scaling} 
+extended these principles to complex topologies. However, prior work reports quality improvements without quantifying determinism 
+or production readiness. Our zero-variance result (std DQ = 0.000) provides the first empirical basis for SLA commitments in 
+multi-agent LLM systems.
+
+RAG-based approaches~\cite{lyu2021empirical} improve context awareness by retrieving historical incidents, but do not address the structural limitations of single-agent prompting. RAG is \textit{complementary} to multi-agent orchestration: integrating RAG with C3 could further improve correctness by grounding recommendations in organizational precedent.
 \subsection{Practical Applications}
 While this study is theoretical (single scenario, simulated environment), the architectural insights have practical implications:
 \subsubsection{Incident Response Automation}
 \begin{itemize}
 \item \textbf{Use case}: Deploy multi-agent system in shadow mode alongside human operators
 \item \textbf{Implementation}: 2-4 week pilot with SRE team, logging recommendations without execution
-\item \textbf{Expected outcome}: 50-70% reduction in time spent interpreting vague AI suggestions
+\item \textbf{Expected outcome}: 50-70\% reduction in time spent interpreting vague AI suggestions
 \item \textbf{Risk}: Requires validation on organization-specific incident types
 \end{itemize}
 \subsubsection{Runbook Generation}
@@ -547,7 +575,7 @@ While this study is theoretical (single scenario, simulated environment), the ar
 \begin{itemize}
 \item \textbf{Use case}: Provide high-quality guidance during on-call training
 \item \textbf{Implementation}: Multi-agent system as teaching tool, validated by senior engineers
-\item \textbf{Expected outcome}: 30% faster ramp-up to independent on-call readiness
+\item \textbf{Expected outcome}: 30\% faster ramp-up to independent on-call readiness
 \item \textbf{Risk}: Recommendations must be validated initially; avoid blind trust
 \end{itemize}
 \subsubsection{Decision Support (Not Automation)}
@@ -568,7 +596,7 @@ While this study is theoretical (single scenario, simulated environment), the ar
     \item[□\square
 □] Integrate with observability platform (Datadog, Splunk, Prometheus)
     \item[□\square
-□] Define rollback criteria (e.g., DQ < 0.5 → escalate to human)
+□] Define rollback criteria (e.g., DQ $<$0.5 → escalate to human)
 \end{itemize}
 
 \subsection{Future Work}
@@ -619,9 +647,7 @@ While this study is theoretical (single scenario, simulated environment), the ar
 \item Establish production deployment best practices
 \end{itemize}
 \section{Conclusion}
-Through 348 controlled trials, we demonstrate that multi-agent LLM orchestration achieves 100\% actionable recommendation quality compared to 1.7\% for single-agent systems, with $81×\times$
-× improvement in specificity and $126×\times$
-× improvement in correctness. Critically, both systems exhibit similar comprehension latency ($\sim$40s), establishing that \textit{architectural value lies in deterministic quality}, not speed.
+Through 348 controlled trials, we demonstrate that multi-agent LLM orchestration achieves 100\% actionable recommendation quality compared to 1.7\% for single-agent systems, with $80×\times$ improvement in specificity and $140×\times$ improvement in correctness. Critically, both systems exhibit similar comprehension latency ($\sim$40s), establishing that \textit{architectural value lies in deterministic quality}, not speed.
 
 The zero quality variance of multi-agent systems---producing identical DQ = 0.692 across all 116 trials---enables production deployment with SLA commitments. Single-agent systems, despite acceptable speed, generate vague, inconsistent recommendations unsuitable for operational use.
 These findings reframe multi-agent orchestration from a performance optimization to a production-readiness requirement for LLM-based incident response. The MyAntFarm.ai framework provides a reproducible foundation for validating these results across incident scenarios, model scales, and human expert evaluations.
@@ -630,15 +656,8 @@ These findings reframe multi-agent orchestration from a performance optimization
 The author thanks the open-source communities behind Ollama, TinyLlama, and the Python/Docker ecosystems. Special appreciation to SRE practitioners who provided domain insights informing the experimental design. This research was conducted independently without institutional affiliation or funding.
 \section*{Data Availability}
 All code, Docker configurations, trial data, and analysis scripts are publicly available at: \url{https://github.com/Phildram1/myantfarm-ai}. The repository includes deterministic reproduction instructions with expected runtime of 25-30 minutes on consumer hardware.
-\begin{thebibliography}{00}
-\bibitem{xu2021aiops} L. Xu, H. Yang, and W. Li, ``AIOps: A Review and Roadmap of Machine Learning in Operations,'' \textit{ACM Computing Surveys}, vol. 54, no. 8, pp. 1--36, 2021.
-\bibitem{zhang2023llm-anomaly} Y. Zhang, S. Wang, and H. Li, ``Large Language Models for Anomaly Detection in Time Series Data,'' \textit{Proceedings of the 2023 ACM SIGKDD Conference on Knowledge Discovery and Data Mining}, 2023, pp. 2145--2154.
-\bibitem{liu2023ragops} Y. Liu, S. Chawla, and D. Kim, ``RAGOps: Operational Intelligence via Retrieval-Augmented LLM Reasoning,'' \textit{Proceedings of the 2023 IEEE International Conference on AI for Operations}, 2023, pp. 87--95.
-\bibitem{qian2023chatdev} C. Qian, X. Cong, C. Yang, W. Chen, Y. Su, J. Xu, Z. Liu, and M. Tang, ``ChatDev: Communicative Agents for Software Development,'' \textit{arXiv preprint arXiv:2307.07924}, 2023.
-\bibitem{wang2024sciagents} Z. Wang, P. Lu, A. Ng, and D. Klein, ``Scientific Discovery with Multi-Agent Reasoning Systems,'' \textit{arXiv preprint arXiv:2401.15821}, 2024.
-\bibitem{park2023generative} J. S. Park, J. C. O'Brien, C. J. Cai, M. R. Morris, P. Liang, and M. S. Bernstein, ``Generative Agents: Interactive Simulacra of Human Behavior,'' \textit{Proceedings of the 36th Annual ACM Symposium on User Interface Software and Technology}, 2023, pp. 1--22.
-\bibitem{zheng2023judging} L. Zheng, W.-L. Chiang, Y. Sheng, S. Zhuang, Z. Wu, Y. Zhuang, Z. Lin, Z. Li, D. Li, E. P. Xing, H. Zhang, J. E. Gonzalez, and I. Stoica, ``Judging LLM-as-a-Judge with MT-Bench and Chatbot Arena,'' \textit{arXiv preprint arXiv:2306.05685}, 2023.
-\bibitem{zhang2019bertscore} T. Zhang, V. Kishore, F. Wu, K. Q. Weinberger, and Y. Artzi, ``BERTScore: Evaluating Text Generation with BERT,'' \textit{International Conference on Learning Representations (ICLR)}, 2020.
-\bibitem{fishback2020sre-handbook} B. Beyer, C. Jones, J. Petoff, and N. R. Murphy, \textit{Site Reliability Engineering: How Google Runs Production Systems}. O'Reilly Media, 2016.
-\end{thebibliography}
+
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+
 \end{document}
