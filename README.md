@@ -18,8 +18,8 @@
 
 **Key Findings**:
 - ✅ **100% vs 1.7%** actionable recommendation rate
-- ✅ **81× improvement** in action specificity  
-- ✅ **126× improvement** in solution correctness
+- ✅ **80× improvement** in action specificity  
+- ✅ **140× improvement** in solution correctness
 - ✅ **Zero quality variance** - deterministic, reliable outputs
 - ✅ **71.7% overall DQ improvement** (0.692 vs 0.403)
 
@@ -78,17 +78,19 @@ Our findings use TinyLlama (1B parameters) for reproducibility and resource cons
 | Component | C2 (Single-Agent) | C3 (Multi-Agent) | Improvement |
 |-----------|-------------------|------------------|-------------|
 | **Validity** | 1.000 ± 0.000 | 1.000 ± 0.000 | ≈ |
-| **Specificity** | 0.007 ± 0.052 | 0.557 ± 0.000 | **81.8×** ⬆️ |
-| **Correctness** | 0.003 ± 0.026 | 0.417 ± 0.000 | **126.3×** ⬆️ |
+| **Specificity** | 0.007 ± 0.052 | 0.557 ± 0.000 | **80×** ⬆️ |
+| **Correctness** | 0.003 ± 0.026 | 0.417 ± 0.000 | **140×** ⬆️ |
 | **Overall DQ** | 0.403 ± 0.023 | 0.692 ± 0.000 | **71.7%** ⬆️ |
 
 ### Quality Distribution
 
 | Metric | C2 (Single-Agent) | C3 (Multi-Agent) |
 |--------|-------------------|------------------|
-| Trials with DQ > 0.5 (Good) | 2/115 (1.7%) | 116/116 (100%) |
-| Trials with DQ < 0.3 (Poor) | 0/115 (0%) | 0/116 (0%) |
+| Trials with DQ > 0.5 (Good) | 2/115* (1.7%) | 116/116 (100%) |
+| Trials with DQ < 0.3 (Poor) | 0/115* (0%) | 0/116 (0%) |
 | Consistent Quality | ❌ No | ✅ Yes |
+* C2 shows 115 trials after removing one catastrophic outlier
+(4009s); see Section IV.E in the PDF
 
 ### Example Outputs
 
