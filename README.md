@@ -153,8 +153,8 @@ For a team handling **100 incidents/month**:
 ```
 Time saved per incident: 5 minutes (interpreting vague AI)
 Annual labor savings: 100 × 12 × 5 min × $200/hr = $20,000
-MTTR reduction value: Assuming conservative 10% MTTR improvement on incidents averaging $500 downtime cost yields an additional $50,000/year in
-business impact.
+MTTR reduction value: Assuming conservative 10% MTTR improvement on incidents
+averaging $500 downtime cost yields an additional $50,000/year in business impact.
 Total: ~$70,000/year
 ```
 
