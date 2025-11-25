@@ -60,6 +60,7 @@ services:
       - ./results:/app/results
     networks:
       - myantfarm_network
+    command: tail -f /dev/null
 
   analyzer:
     build:
