@@ -1,0 +1,22 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Drammeh
+    given-names: Philip
+    email: philip.drammeh@gmail.com
+title: "MyAntFarm.ai: Multi-Agent LLM Orchestration for Incident Response"
+version: 1.0.0
+date-released: 2025-11-20
+url: "https://github.com/Phildram1/myantfarm-ai"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Drammeh
+      given-names: Philip
+  title: "Multi-Agent LLM Orchestration Achieves Deterministic, High-Quality Decision Support for Incident Response"
+  journal: "arXiv preprint"
+  year: 2025
+  url: "https://arxiv.org/abs/2511.15755"
+  identifiers:
+    - type: other
+      value: "arXiv:2511.15755"
