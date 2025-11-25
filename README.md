@@ -4,6 +4,8 @@
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/docker-required-blue.svg)](https://www.docker.com/)
 
+[![arXiv](https://img.shields.io/badge/arXiv-2511.15755-b31b1b.svg)](https://arxiv.org/abs/2511.15755)
+
 **Paper**: [Executive Summary](https://github.com/Phildram1/myantfarm-ai/blob/main/Docs/Multi-Agent_LLM_Orchestration_Incident_Response_Executive_Summary.pdf) | [Full Paper](https://github.com/Phildram1/myantfarm-ai/blob/main/Docs/Multi-Agent_LLM_Orchestration_Incident-Response_Full.pdf)
 
 > **Reproducible framework demonstrating that multi-agent LLM orchestration achieves 100% actionable recommendation quality compared to 1.7% for single-agent systems, with 80× improvement in specificity and 140× improvement in correctness.**
@@ -13,6 +15,8 @@
 **Title**: Multi-Agent LLM Orchestration Achieves Deterministic, High-Quality Decision Support for Incident Response
 
 **Authors**: Philip Drammeh, M.Eng.
+**Published:** arXiv:2511.15755, November 2025  
+**Status:** Submitted to IEEE Software
 
 **Abstract**: This study demonstrates that multi-agent orchestration fundamentally transforms LLM-based incident response from generating vague suggestions to producing specific, actionable recommendations. Through 348 controlled trials, we show that multi-agent systems achieve 100% actionable recommendation quality (DQ > 0.5) compared to 1.7% for single-agent approaches, with 80× higher specificity and 140× higher correctness. Critically, multi-agent systems exhibit zero quality variance, making them production-ready, while single-agent systems produce inconsistent, largely unusable outputs.
 
