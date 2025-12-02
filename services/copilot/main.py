@@ -12,9 +12,9 @@ logger = logging.getLogger(__name__)
 app = FastAPI(title="Copilot Service")
 
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434")
-MODEL_NAME = os.getenv("MODEL_NAME", "tinyllama")
+MODEL_NAME = os.getenv("MODEL_NAME", "tinyllama:latest")
 TEMPERATURE = float(os.getenv("TEMPERATURE", "0.7"))
-MAX_TOKENS = int(os.getenv("MAX_TOKENS", "200"))
+MAX_TOKENS = int(os.getenv("MAX_TOKENS", "100"))
 
 
 class CircuitBreaker:
@@ -75,7 +75,7 @@ async def call_ollama_safe(prompt: str):
         return None
     
     try:
-        async with httpx.AsyncClient(timeout=120.0) as client:
+        async with httpx.AsyncClient(timeout=300.0) as client:
             response = await client.post(
                 f"{OLLAMA_URL}/api/generate",
                 json={
