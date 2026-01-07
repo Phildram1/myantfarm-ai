@@ -1,85 +1,63 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to MyAntFarm.ai will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
-and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [2.0.0] - 2025-11-05
-
-### Major Changes - Quality-Focused Reframing
-
-This release fundamentally reframes the project from speed-focused to quality-focused based on empirical findings.
+## [v2] - 2026-01-07
 
 ### Added
-
-- **Decision Quality (DQ) metric v2.0**: Multi-dimensional scoring (Validity, Specificity, Correctness)
-- **Determinism analysis**: Zero-variance quality in multi-agent systems
-- **Outlier removal pipeline**: Automated cleaning of catastrophic failures
-- **Component breakdown analysis**: Detailed specificity and correctness metrics
-- **Actionability thresholds**: DQ > 0.5 definition with distribution analysis
-- **LaTeX paper**: Complete IEEE-format paper with revised findings
-- **Stability visualization**: 4 publication-quality plots
-- **Complete documentation**: Metrics specification, contributing guide, API docs
-- **CI/CD pipeline**: GitHub Actions for automated testing
+- Comprehensive threats to validity analysis (Section V.J)
+- Reproducibility notes section with hardware requirements and common issues (Section VII)
+- Clarification on "agent" definition to distinguish from autonomous agent frameworks
+- Practical implications subsection for AIOps tool builders (Section V.E)
+- Prompt engineering confound discussion (Section V.G.6)
 
 ### Changed
-
-- **Primary contribution**: From "58% latency reduction" to "100% actionability rate vs. 1.7%"
-- **Paper title**: From latency-focused to quality-focused
-- **Evaluation focus**: From T₂U to DQ as primary metric
-- **Architectural value**: From speed optimization to production-readiness requirement
-
-### Key Findings (New)
-
-- Multi-agent achieves 100% actionable recommendations vs. 1.7% for single-agent
-- 81× improvement in action specificity
-- 126× improvement in solution correctness
-- Zero quality variance (DQ Std ≈ 0) enables SLA commitments
-- Speed parity after outlier removal (40.31s vs. 41.61s, 3.2% difference)
+- Expanded limitations section with deeper analysis of each constraint
+- Updated all model references to latest versions (GPT-5.2, Claude Sonnet 4.5, Llama 3.3 70B)
+- Updated Phase 2 timeline with current experiment status
+- Enhanced Future Work section with concrete timelines and status indicators
 
 ### Fixed
+- Regex pattern formatting to prevent column overflow
+- Model name consistency throughout the paper
 
-- DQ formula: Corrected from multiplicative context weight to additive components
-- Statistical tests: Now actually executed (not hypothetical)
-- C1 timing transparency: Clearly labeled as simulated baseline
-- Unicode handling in LaTeX export
+### Documentation
+- Added version update notes box at top of paper
+- Improved abstract with production-readiness framing
+- Added "Scope and Limitations" paragraph in introduction
 
-### Deprecated
-
-- Speed-focused messaging in paper abstract and title
-- Variance ratio as primary metric (replaced with quality distribution)
-
-## [1.0.0] - 2025-11-01
-
-### Initial Release
-
-- Basic simulation framework with C1/C2/C3 conditions
-- Original DQ formula (flawed)
-- Preliminary T₂U measurements
-- Docker-based evaluation stack
-- TinyLlama (1B) backend
+**Paper**: [arXiv:2511.15755v2](https://arxiv.org/abs/2511.15755v2)
 
 ---
 
-## Roadmap
+## [v1] - 2025-11-19
 
-### [2.1.0] - Planned Q1 2026
+### Added
+- Initial release with 348-trial evaluation
+- Decision Quality (DQ) metric framework
+- Reproducible Docker-based experimental framework
+- Single-agent vs multi-agent comparison
+- Statistical validation with ANOVA and pairwise t-tests
+- Complete source code and trial data
 
-- [ ] Multiple incident scenarios (database, network, CDN)
-- [ ] Human validation study (n=10-15 SRE experts)
-- [ ] Inter-rater reliability analysis
-- [ ] Larger model evaluation (Llama 3.1 70B)
+### Core Findings
+- 100% actionable recommendation rate (multi-agent) vs 1.7% (single-agent)
+- 80× improvement in action specificity
+- 140× improvement in solution correctness
+- Zero quality variance in multi-agent systems
 
-### [3.0.0] - Planned Q2 2026
-
-- [ ] RAG integration with historical incidents
-- [ ] MCP connectors for live telemetry
-- [ ] Production deployment guide
-- [ ] Longitudinal evaluation over weeks
+**Paper**: [arXiv:2511.15755v1](https://arxiv.org/abs/2511.15755v1)
 
 ---
 
-**Version**: 2.0.0 (Quality-Focused)  
-**Date**: November 5, 2025  
-**Author**: Philip Drammeh
+## Experimental Results
+
+**No changes to experimental results between v1 and v2.** Version 2 updates focus on:
+- Clarifications and additional context
+- Expanded discussion of limitations
+- Updated future work timeline
+- Current model references
+
+The core findings (100% actionability, 80× specificity, 140× correctness) remain unchanged.
