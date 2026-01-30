@@ -1,0 +1,29 @@
+{
+  "scenario_id": "auth-service-001",
+  "title": "Authentication Service Outage",
+  "description": "Authentication service experiencing 500 errors after v2.4.0 deployment",
+  "context": {
+    "service": "auth-service",
+    "deployment_version": "v2.4.0",
+    "symptoms": [
+      "500 Internal Server Error",
+      "Authentication failures",
+      "Database connection pool exhaustion"
+    ],
+    "timeline": [
+      "09:00 - Deployment v2.4.0 started",
+      "09:15 - First 500 errors reported",
+      "09:20 - Error rate at 23%",
+      "09:25 - Incident declared"
+    ]
+  },
+  "ground_truth": {
+    "root_cause": "Deployment v2.4.0 introduced database connection pool exhaustion",
+    "solution": "Rollback to v2.3.0 and verify database connection pool settings",
+    "actions": [
+      "rollback auth-service deployment to v2.3.0",
+      "verify database connection pool max_connections setting",
+      "monitor error rates for 5 minutes post-rollback"
+    ]
+  }
+}
