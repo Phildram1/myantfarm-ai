@@ -142,6 +142,47 @@ myantfarm-ai/
 │   └── references.bib    # Bibliography
 └── README.md
 ```
+## 📁 Repository Architecture
+
+This repository follows the microservices architecture described in the paper:
+
+### Directory Structure
+
+- **`services/`**: Five Docker microservices as described in Section III.A
+  - `ollama/` - LLM Backend (Ollama serving TinyLlama)
+  - `copilot/` - Single-agent (C2) FastAPI service
+  - `multiagent/` - Multi-agent orchestrator (C3) with specialized agents
+  - `evaluator/` - **Trial controller** (executes 116 trials per condition)
+  - `analyzer/` - Post-processing pipeline for metrics computation
+
+- **`src/`**: Shared Python libraries (imported by services)
+  - `scoring/` - Decision Quality (DQ) scorer implementation
+  - `analysis/` - Statistical analysis utilities (Mann-Whitney U, Cohen's d)
+  - `evaluation/` - Trial rescoring utilities
+  - `utils/` - Common LLM interface, logging, configuration
+
+- **`data/`**: Incident scenarios and trial results
+  - `scenarios/` - Incident scenario definitions (JSON)
+  - `results/` - Trial outputs (gitignored, generated during evaluation)
+
+### Key Files
+
+| Purpose | Location |
+|---------|----------|
+| **Run 348 trials** | `services/evaluator/run_evaluation.py` |
+| **DQ scoring logic** | `src/scoring/dq_scorer_v2.py` |
+| **Statistical analysis** | `src/analysis/statistical_tests.py` |
+| **Analyze results** | `analyze_results.py` (root level) |
+| **Docker orchestration** | `docker-compose.yml` |
+| **Main scenario** | `data/scenarios/auth_service_outage.json` |
+
+### Why This Structure?
+
+- **Separation of concerns**: Services run in containers, libraries are shared code
+- **Reproducibility**: Each service has its own Dockerfile and dependencies
+- **Clarity**: Matches the "five containerized microservices" described in paper Section III.A
+- **Best practice**: Follows standard microservices + shared library pattern
+
 
 ## Practical Applications
 
