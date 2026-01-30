@@ -126,20 +126,29 @@ Currently in progress:
 
 ```
 myantfarm-ai/
-├── src/
-│   ├── llm_backend/      # Ollama service
-│   ├── copilot/          # Single-agent (C2)
-│   ├── multiagent/       # Multi-agent orchestrator (C3)
-│   ├── evaluator/        # Trial controller
-│   ├── analyzer/         # Statistical analysis
-│   └── scoring/          # DQ scorer implementation
-├── docker-compose.yml
+│
+├── services/                   # Docker microservices
+│   ├── ollama/                # LLM Backend (Ollama serving TinyLlama)
+│   ├── copilot/               # Single-agent (C2) FastAPI service
+│   ├── multiagent/            # Multi-agent orchestrator (C3)
+│   ├── evaluator/             # Trial controller (executes 116 trials per condition)
+│   └── analyzer/              # Post-processing pipeline
+│
+├── src/                       # Shared Python libraries
+│   ├── scoring/               # DQ scorer implementation
+│   ├── analysis/              # Statistical analysis utilities
+│   ├── evaluation/            # Trial rescoring utilities
+│   └── utils/                 # LLM interface, logging, config
+│
 ├── data/
-│   ├── scenarios/        # Incident scenarios
-│   └── results/          # Trial outputs
-├── paper/
-│   ├── paper_v2.pdf      # Latest arXiv version
-│   └── references.bib    # Bibliography
+│   ├── scenarios/             # Incident scenarios
+│   └── results/               # Trial outputs (gitignored)
+│
+├── scripts/                   # Convenience scripts
+├── tests/                     # Unit tests
+├── Docs/                      # Documentation
+├── paper/                     # LaTeX paper source
+├── docker-compose.yml
 └── README.md
 ```
 ## 📁 Repository Architecture
