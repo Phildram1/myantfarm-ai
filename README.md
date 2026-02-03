@@ -30,69 +30,349 @@ MyAntFarm.ai is a reproducible experimental framework demonstrating that multi-a
 - ✅ Updated model references to latest versions (GPT-5.2, Claude Sonnet 4.5, Llama 3.3 70B)
 - ✅ Strengthened practical implications for AIOps tool builders
 
-## Quick Start
+---
+
+## 🚀 Quick Start (Verified Reproducible)
 
 ### Prerequisites
-- Docker and Docker Compose
-- 16GB RAM minimum (32GB recommended)
-- 4-core CPU
-- No GPU required (TinyLlama runs efficiently on CPU)
+- **Docker Desktop** (with 8GB+ RAM allocation)
+- **Python 3.11+** (for local analysis scripts only)
+- **20GB free disk space** (includes Ollama model)
+- **40 minutes** for complete evaluation
 
-### Installation
+### Step 1: Clone and Setup (5 minutes)
 
 ```bash
+# Clone repository
 git clone https://github.com/Phildram1/myantfarm-ai.git
 cd myantfarm-ai
+
+# Start services and build containers
 docker-compose up -d
+
+# Wait for services to initialize
+sleep 60
 ```
 
-### Run Evaluation
+### Step 2: Load Ollama Model (2-3 minutes, one-time)
+
+**CRITICAL**: The TinyLlama model must be loaded before running trials.
 
 ```bash
-# Full 348-trial evaluation (25-30 minutes)
-python src/evaluator/run_trials.py
+# Pull TinyLlama model (~637MB download)
+docker exec -it myantfarm_ollama ollama pull tinyllama
 
-# Analyze results
-python src/analysis/statistical_tests.py
+# Verify model is loaded
+docker exec -it myantfarm_ollama ollama list
+# Should show: tinyllama:latest    ...    637 MB
 ```
 
-## Architecture
+### Step 3: Run Full Evaluation (30-40 minutes)
 
-MyAntFarm.ai consists of five containerized microservices:
+```bash
+# Run 348 trials (116 per condition: C1, C2, C3)
+docker exec -it myantfarm_evaluator python run_evaluation.py
+
+# Monitor progress (optional, in another terminal)
+docker logs -f myantfarm_evaluator
+```
+
+**Expected output**:
+```
+Running C1 (Baseline) trials...
+✓ C1 complete: 116 trials
+
+Running C2 (Single-Agent) trials...
+  (Rate limited: ~6 seconds per trial)
+✓ C2 complete: 116 trials
+
+Running C3 (Multi-Agent) trials...
+  (Rate limited: ~6 seconds per trial)
+✓ C3 complete: 116 trials
+
+✅ Evaluation complete!
+Total trials: 348
+Results saved to: /app/results
+```
+
+### Step 4: Score Trials (30 seconds)
+
+```bash
+# Copy scoring code to container
+docker cp src myantfarm_evaluator:/app/
+
+# Run manual scoring script
+docker exec -it myantfarm_evaluator python -c "
+import json, sys
+sys.path.insert(0, '/app/src')
+from scoring.dq_scorer_v2 import DQScorer
+
+with open('/app/results/all_trials.json', 'r') as f:
+    data = json.load(f)
+
+ground_truth = 'rollback auth-service deployment to v2.3.0 verify database connection pool'
+scorer = DQScorer(ground_truth)
+
+for trial in data['trials']:
+    if trial['condition'] in ['C2', 'C3']:
+        actions = trial.get('actions', [])
+        if actions:
+            result = scorer.score_trial(actions)
+            trial['dq_score'] = result['dq']
+        else:
+            trial['dq_score'] = 0.0
+    else:
+        trial['dq_score'] = 0.0
+
+with open('/app/results/all_trials.json', 'w') as f:
+    json.dump(data, f, indent=2)
+
+print('Scoring complete!')
+"
+```
+
+### Step 5: Analyze Results (10 seconds)
+
+```bash
+# Install pandas locally (if needed)
+pip install pandas numpy scipy
+
+# Run analysis
+python analyze_results.py
+```
+
+**Expected output**:
+```
+======================================================================
+RESULTS:
+======================================================================
+
+C2 (Single-Agent):
+  Mean DQ: 0.403
+  Std DQ: 0.033
+  Actionable: 1/116
+
+C3 (Multi-Agent):
+  Mean DQ: 0.692
+  Std DQ: 0.000
+  Actionable: 116/116
+======================================================================
+```
+
+---
+
+## ⚠️ Important: Running the Evaluator
+
+**The evaluator runs INSIDE a Docker container, not as a standalone Python script.**
+
+### ❌ Common Mistakes (Don't Do This)
+
+```bash
+# ❌ WRONG - This directory doesn't exist!
+python src/evaluator/run_trials.py
+
+# ❌ WRONG - Needs Docker container environment
+python services/evaluator/run_evaluation.py
+```
+
+### ✅ Correct Methods
+
+**Method 1: Direct Docker Command (Recommended)**
+```bash
+docker exec -it myantfarm_evaluator python run_evaluation.py
+```
+
+**Method 2: Quick Test (9 trials, ~5 minutes)**
+```bash
+docker exec -it myantfarm_evaluator python -c "
+import os
+os.environ['TRIALS_PER_CONDITION'] = '3'
+exec(open('run_evaluation.py').read())
+"
+```
+
+### Why Docker is Required
+
+The evaluator needs:
+- Access to other services (Ollama, Copilot, MultiAgent) via Docker network
+- Shared Docker volumes for results storage
+- Container-specific environment variables and configuration
+- Service discovery via Docker Compose networking
+
+---
+
+## 🏗️ Architecture
+
+MyAntFarm.ai consists of five containerized microservices orchestrated via Docker Compose:
 
 1. **LLM Backend**: Ollama (v0.1.32) serving TinyLlama (1B parameters, 4-bit quantized)
-2. **Copilot (C2)**: Single-agent summarization
+2. **Copilot (C2)**: FastAPI service implementing single-agent summarization
 3. **MultiAgent (C3)**: Coordinator dispatching to specialized agents:
    - Diagnosis Specialist
    - Remediation Planner
    - Risk Assessor
-4. **Evaluator**: Controller executing trials with rate limiting
+4. **Evaluator**: Controller executing trials with rate limiting (10 calls/min)
 5. **Analyzer**: Statistical analysis pipeline
 
-## Decision Quality (DQ) Metric
+All services share persistent volumes ensuring deterministic reproduction across environments.
+
+---
+
+## 📁 Repository Structure
+
+```
+myantfarm-ai/
+│
+├── services/                          # Docker microservices (5 services from paper)
+│   ├── ollama/                        # Service 1: LLM Backend
+│   ├── copilot/                       # Service 2: Single-agent (C2)
+│   │   └── main.py
+│   ├── multiagent/                    # Service 3: Multi-agent (C3)
+│   │   └── main.py
+│   ├── evaluator/                     # Service 4: Trial controller
+│   │   └── run_evaluation.py          # ← Main evaluation script (run via Docker!)
+│   └── analyzer/                      # Service 5: Post-processing
+│       └── compute_metrics.py
+│
+├── src/                               # Shared Python libraries (NOT services!)
+│   ├── scoring/                       # DQ scorer implementation
+│   │   └── dq_scorer_v2.py
+│   ├── analysis/                      # Statistical analysis utilities
+│   │   └── statistical_tests.py
+│   ├── evaluation/                    # Trial rescoring utilities
+│   │   └── rescore_all_trials.py
+│   └── utils/                         # Common utilities
+│       ├── llm_interface.py
+│       ├── logger.py
+│       └── config.py
+│
+├── data/
+│   ├── scenarios/                     # Incident scenarios (JSON)
+│   │   └── auth_service_outage.json
+│   └── results/                       # Trial outputs (gitignored)
+│
+├── scripts/                           # Convenience scripts
+├── tests/                             # Unit tests
+├── Docs/                              # Documentation
+├── paper/                             # LaTeX paper source
+├── docker-compose.yml                 # Service orchestration
+├── analyze_results.py                 # Analysis script (run on host)
+└── README.md
+```
+
+### Key Files Reference
+
+| Purpose | Location | How to Run |
+|---------|----------|------------|
+| **Run 348 trials** | `services/evaluator/run_evaluation.py` | `docker exec -it myantfarm_evaluator python run_evaluation.py` |
+| **DQ scoring logic** | `src/scoring/dq_scorer_v2.py` | Used by evaluator (imported) |
+| **Statistical analysis** | `src/analysis/statistical_tests.py` | Used by analyzer |
+| **Analyze results** | `analyze_results.py` (root) | `python analyze_results.py` (on host) |
+| **Docker orchestration** | `docker-compose.yml` | `docker-compose up -d` |
+| **Main scenario** | `data/scenarios/auth_service_outage.json` | Used by evaluator |
+
+### Why This Structure?
+
+- **`services/`** = Containerized microservices that run independently
+- **`src/`** = Shared Python libraries imported by services (not containers)
+- **Separation of concerns** = Services run in Docker, libraries are shared code
+- **Reproducibility** = Each service has its own Dockerfile and dependencies
+- **Clarity** = Matches "five containerized microservices" in paper Section III.A
+
+---
+
+## 📊 Decision Quality (DQ) Metric
 
 Novel evaluation framework measuring:
-- **Validity** (40%): Technical feasibility
-- **Specificity** (30%): Presence of concrete identifiers (versions, commands)
+- **Validity** (40%): Technical feasibility of recommended actions
+- **Specificity** (30%): Presence of concrete identifiers (versions, commands, service names)
 - **Correctness** (30%): Alignment with ground truth solutions
 
 **Actionability threshold**: DQ > 0.5
 
-## Reproducibility
+---
 
-All experiments are fully deterministic:
-- Random seed: 42
-- LLM temperature: 0.7
-- Model: TinyLlama 1.1B (4-bit quantization)
-- Expected runtime: 25-30 minutes on 16GB RAM system
+## ✅ Verification
 
-### Common Issues
+Your reproduction is successful if you see:
 
-1. **Ollama connection errors**: Ensure service running on port 11434
-2. **Docker network conflicts**: Use `docker-compose down -v` to reset
-3. **Memory exhaustion**: Reduce concurrent trials in evaluator config
+| Metric | Expected | Acceptable Range |
+|--------|----------|------------------|
+| **C2 Mean DQ** | 0.403 | 0.393 - 0.413 |
+| **C2 Std DQ** | 0.023-0.033 | 0.020 - 0.040 |
+| **C2 Actionable** | 1-2/116 | 0-3/116 (0.9-2.6%) |
+| **C3 Mean DQ** | 0.692 | 0.682 - 0.702 |
+| **C3 Std DQ** | 0.000 | **Must be 0.000** |
+| **C3 Actionable** | 116/116 | **Must be 100%** |
 
-## Results Summary
+**Key validation points**:
+- ✅ C3 Mean DQ is ~70% higher than C2 (0.692 vs 0.403)
+- ✅ C3 has **zero variance** (all trials produce identical quality)
+- ✅ C3 achieves 100% actionability vs ~1% for C2
+
+---
+
+## 🔧 Troubleshooting
+
+### Issue: "404 Not Found" in copilot logs
+
+**Cause**: Ollama model not loaded
+
+**Fix**:
+```bash
+docker exec -it myantfarm_ollama ollama pull tinyllama
+docker exec -it myantfarm_ollama ollama list  # Verify
+docker-compose restart copilot
+```
+
+### Issue: All DQ scores are 0
+
+**Cause**: Scoring code not in container
+
+**Fix**:
+```bash
+docker cp src myantfarm_evaluator:/app/
+# Re-run scoring step (Step 4 above)
+```
+
+### Issue: Copilot timeouts during trials
+
+**Cause**: Timeout too short for slow machines
+
+**Fix**: Edit `services/copilot/main.py`:
+```python
+# Line 58: Increase timeout if needed
+async with httpx.AsyncClient(timeout=300.0) as client:  # Default: 300s
+```
+
+### Issue: C2 Mean DQ is 0.538 (not 0.403)
+
+**Cause**: All C2 trials used fallback (circuit breaker opened)
+
+**Symptoms**:
+- All C2 trials have identical actions
+- C2 Std DQ = 0.0
+- Copilot logs show "Using fallback response"
+
+**Fix**:
+```bash
+# Verify Ollama model is loaded
+docker exec -it myantfarm_ollama ollama list
+
+# Check copilot can reach Ollama
+docker logs myantfarm_copilot | grep "404"
+
+# If 404s present, restart with model loaded
+docker-compose down
+docker-compose up -d
+docker exec -it myantfarm_ollama ollama pull tinyllama
+sleep 60
+# Re-run evaluation
+```
+
+---
+
+## 📈 Results Summary
 
 | Condition | Mean T2U (s) | Mean DQ | Actionable Rate |
 |-----------|--------------|---------|-----------------|
@@ -102,7 +382,35 @@ All experiments are fully deterministic:
 
 **Statistical significance**: All comparisons p < 0.001, Cohen's d > 18
 
-## Phase 2 Status (Q1-Q2 2026)
+### Decision Quality Component Breakdown
+
+| Component | C2 (Single-Agent) | C3 (Multi-Agent) | Improvement |
+|-----------|-------------------|------------------|-------------|
+| **Validity** | 1.000 ± 0.000 | 1.000 ± 0.000 | ≈ |
+| **Specificity** | 0.007 ± 0.052 | 0.557 ± 0.000 | **80×** ⬆️ |
+| **Correctness** | 0.003 ± 0.026 | 0.417 ± 0.000 | **140×** ⬆️ |
+| **Overall DQ** | 0.403 ± 0.023 | 0.692 ± 0.000 | **71.7%** ⬆️ |
+
+---
+
+## 🧪 Reproducibility
+
+All experiments are fully deterministic:
+- **Random seed**: 42 (set in evaluator configuration)
+- **LLM temperature**: 0.7 (fixed across all trials)
+- **Model**: TinyLlama 1.1B parameters, 4-bit quantization
+- **Ollama version**: 0.1.32
+- **Expected runtime**: 25-30 minutes for full 348-trial evaluation on 16GB RAM system with CPU inference
+
+### Common Issues
+
+1. **Ollama connection errors**: Ensure service running on port 11434
+2. **Docker network conflicts**: Use `docker-compose down -v` to reset
+3. **Memory exhaustion**: Reduce concurrent trials in evaluator config
+
+---
+
+## 🚀 Phase 2 Status (Q1-Q2 2026)
 
 Currently in progress:
 - ✅ **Multi-scenario validation**: 5 diverse incident types
@@ -111,7 +419,27 @@ Currently in progress:
 - 📅 **RAG integration**: Q2 2026
 - 📅 **MCP integration**: Q2 2026
 
-## Citation
+---
+
+## 💼 Practical Applications
+
+1. **Incident Response Automation**: Deploy in shadow mode alongside human operators
+2. **Runbook Generation**: Generate version-specific remediation steps
+3. **Junior Engineer Onboarding**: Teaching tool validated by senior engineers
+4. **Decision Support**: Human-in-the-loop recommendations with confidence scores
+
+### Deployment Checklist
+
+Before production use:
+- [ ] Validate on 3-5 incident types from your domain
+- [ ] Conduct human evaluation with 5-10 SRE practitioners
+- [ ] Test with your LLM backend (GPT-5.2, Claude Sonnet 4.5, Llama 3.3 70B)
+- [ ] Integrate with observability platform (Datadog, Splunk, Prometheus)
+- [ ] Define rollback criteria (e.g., DQ < 0.5 → escalate to human)
+
+---
+
+## 🎓 Citation
 
 ```bibtex
 @article{drammeh2025multiagent,
@@ -122,110 +450,30 @@ Currently in progress:
 }
 ```
 
-## Project Structure
+---
 
-```
-myantfarm-ai/
-│
-├── services/                   # Docker microservices
-│   ├── ollama/                # LLM Backend (Ollama serving TinyLlama)
-│   ├── copilot/               # Single-agent (C2) FastAPI service
-│   ├── multiagent/            # Multi-agent orchestrator (C3)
-│   ├── evaluator/             # Trial controller (executes 116 trials per condition)
-│   └── analyzer/              # Post-processing pipeline
-│
-├── src/                       # Shared Python libraries
-│   ├── scoring/               # DQ scorer implementation
-│   ├── analysis/              # Statistical analysis utilities
-│   ├── evaluation/            # Trial rescoring utilities
-│   └── utils/                 # LLM interface, logging, config
-│
-├── data/
-│   ├── scenarios/             # Incident scenarios
-│   └── results/               # Trial outputs (gitignored)
-│
-├── scripts/                   # Convenience scripts
-├── tests/                     # Unit tests
-├── Docs/                      # Documentation
-├── paper/                     # LaTeX paper source
-├── docker-compose.yml
-└── README.md
-```
-## 📁 Repository Architecture
-
-This repository follows the microservices architecture described in the paper:
-
-### Directory Structure
-
-- **`services/`**: Five Docker microservices as described in Section III.A
-  - `ollama/` - LLM Backend (Ollama serving TinyLlama)
-  - `copilot/` - Single-agent (C2) FastAPI service
-  - `multiagent/` - Multi-agent orchestrator (C3) with specialized agents
-  - `evaluator/` - **Trial controller** (executes 116 trials per condition)
-  - `analyzer/` - Post-processing pipeline for metrics computation
-
-- **`src/`**: Shared Python libraries (imported by services)
-  - `scoring/` - Decision Quality (DQ) scorer implementation
-  - `analysis/` - Statistical analysis utilities (Mann-Whitney U, Cohen's d)
-  - `evaluation/` - Trial rescoring utilities
-  - `utils/` - Common LLM interface, logging, configuration
-
-- **`data/`**: Incident scenarios and trial results
-  - `scenarios/` - Incident scenario definitions (JSON)
-  - `results/` - Trial outputs (gitignored, generated during evaluation)
-
-### Key Files
-
-| Purpose | Location |
-|---------|----------|
-| **Run 348 trials** | `services/evaluator/run_evaluation.py` |
-| **DQ scoring logic** | `src/scoring/dq_scorer_v2.py` |
-| **Statistical analysis** | `src/analysis/statistical_tests.py` |
-| **Analyze results** | `analyze_results.py` (root level) |
-| **Docker orchestration** | `docker-compose.yml` |
-| **Main scenario** | `data/scenarios/auth_service_outage.json` |
-
-### Why This Structure?
-
-- **Separation of concerns**: Services run in containers, libraries are shared code
-- **Reproducibility**: Each service has its own Dockerfile and dependencies
-- **Clarity**: Matches the "five containerized microservices" described in paper Section III.A
-- **Best practice**: Follows standard microservices + shared library pattern
-
-
-## Practical Applications
-
-1. **Incident Response Automation**: Deploy in shadow mode alongside human operators
-2. **Runbook Generation**: Generate version-specific remediation steps
-3. **Junior Engineer Onboarding**: Teaching tool validated by senior engineers
-4. **Decision Support**: Human-in-the-loop recommendations with confidence scores
-
-## Deployment Checklist
-
-Before production use:
-- [ ] Validate on 3-5 incident types from your domain
-- [ ] Conduct human evaluation with 5-10 SRE practitioners
-- [ ] Test with your LLM backend (GPT-5.2, Claude Sonnet 4.5, Llama 3.3 70B)
-- [ ] Integrate with observability platform (Datadog, Splunk, Prometheus)
-- [ ] Define rollback criteria (e.g., DQ < 0.5 → escalate to human)
-
-## License
+## 📝 License
 
 MIT License - see LICENSE file for details
 
-## Contact
+---
 
-**Philip Drammeh**  
+## 📞 Contact
+
+**Philip Drammeh, M.Eng.**  
 Email: philip.drammeh@gmail.com  
-GitHub: [@Phildram1](https://github.com/Phildram1)
+GitHub: [@Phildram1](https://github.com/Phildram1)  
+LinkedIn: [Philip Drammeh](https://www.linkedin.com/in/philip-drammeh/)
 
 For reproduction support or questions about the research, please open an issue or email directly.
 
-## Acknowledgments
+---
+
+## 🙏 Acknowledgments
 
 Thanks to the open-source communities behind:
-- Ollama
-- TinyLlama
+- Ollama team for local LLM serving
+- Meta AI for TinyLlama model
 - Python/Docker ecosystems
 - SRE practitioners who provided domain insights
 
