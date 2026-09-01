@@ -1,5 +1,7 @@
 # MyAntFarm.ai - Multi-Agent LLM Orchestration for Incident Response
 
+⚠️ Findings withdrawn. A code audit found that the multi-agent condition's recommended-action list is a constant in services/multiagent/main.py, not model output, and that the scorer reads only that field. All Decision Quality results in arXiv:2511.15755, and the zero-variance, actionability, and improvement-multiplier claims derived from them, are withdrawn. The DQScorer in this repository should not be used as a validated metric.
+
 [![arXiv](https://img.shields.io/badge/arXiv-2511.15755-b31b1b.svg)](https://arxiv.org/abs/2511.15755)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
